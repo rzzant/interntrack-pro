@@ -10,6 +10,9 @@ import { STATUS_COLORS } from "@/lib/utils";
 const STATUSES = ["all", "Applied", "Interview", "Offer", "Rejected"] as const;
 type StatusFilter = (typeof STATUSES)[number];
 
+// ✅ FIXED TYPE (matches dropdown values)
+type ApplicationStatus = "Applied" | "Interview" | "Offer" | "Rejected";
+
 export default function ApplicationsPage() {
   const { openModal } = useUIStore();
 
@@ -34,10 +37,17 @@ export default function ApplicationsPage() {
     fetchApplications();
   }, [fetchApplications]);
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
+  // ✅ FULLY FIXED FUNCTION
+  const handleStatusChange = async (
+    id: string,
+    newStatus: ApplicationStatus
+  ) => {
     setApplications((prev) =>
-      prev.map((app) => (app._id === id ? { ...app, status: newStatus } : app))
+      prev.map((app) =>
+        app._id === id ? { ...app, status: newStatus } : app
+      )
     );
+
     try {
       await applicationsAPI.updateStatus(id, { status: newStatus });
     } catch {
@@ -72,7 +82,6 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Applications</h1>
         <button onClick={() => openModal()} className="btn-primary">
@@ -80,7 +89,6 @@ export default function ApplicationsPage() {
         </button>
       </div>
 
-      {/* Search */}
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3 top-2 text-white/40" />
@@ -93,14 +101,15 @@ export default function ApplicationsPage() {
         </div>
       </div>
 
-      {/* Status Filter */}
       <div className="flex gap-2 flex-wrap">
         {STATUSES.map((s) => (
           <button
             key={s}
             onClick={() => setStatus(s)}
             className={`px-3 py-1 rounded ${
-              status === s ? "bg-blue-500 text-white" : "bg-white/10 text-white/60"
+              status === s
+                ? "bg-blue-500 text-white"
+                : "bg-white/10 text-white/60"
             }`}
           >
             {s}
@@ -108,7 +117,6 @@ export default function ApplicationsPage() {
         ))}
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Object.entries(stats).map(([key, value]) => (
           <div
@@ -121,7 +129,6 @@ export default function ApplicationsPage() {
         ))}
       </div>
 
-      {/* List */}
       {loading ? (
         <p className="text-white/40">Loading...</p>
       ) : filtered.length === 0 ? (
@@ -140,13 +147,20 @@ export default function ApplicationsPage() {
                 className="flex items-center gap-4 p-4 border border-white/10 rounded transition hover:bg-white/5"
               >
                 <div className="flex-1">
-                  <div className="text-white font-medium">{app.companyName}</div>
+                  <div className="text-white font-medium">
+                    {app.companyName}
+                  </div>
                   <div className="text-white/50 text-sm">{app.role}</div>
                 </div>
 
                 <select
                   value={app.status}
-                  onChange={(e) => handleStatusChange(app._id, e.target.value)}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      app._id,
+                      e.target.value as ApplicationStatus
+                    )
+                  }
                   className={`px-2 py-1 rounded ${colors.bg} ${colors.text}`}
                 >
                   <option value="Applied">Applied</option>
@@ -155,7 +169,9 @@ export default function ApplicationsPage() {
                   <option value="Rejected">Rejected</option>
                 </select>
 
-                <button onClick={() => openModal(app, "edit")}>Edit</button>
+                <button onClick={() => openModal(app, "edit")}>
+                  Edit
+                </button>
 
                 <button
                   onClick={() => handleDelete(app._id)}
