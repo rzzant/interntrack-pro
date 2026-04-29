@@ -74,17 +74,21 @@ app.use("*", (req, res, next) => {
 app.use(globalErrorHandler);
 
 // ─── Database ─────────────────────────────────────────────
+// ─── Database Connection ──────────────────────────────────────
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/interntrack_pro")
+  .connect(process.env.MONGODB_URI) // Remove the localhost fallback for production
   .then(() => {
     console.log("✅ MongoDB connected successfully");
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
   })
   .catch((err) => {
     console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1);
+    // In production, you might not want to kill the server immediately 
+    // so you can still see logs, but process.exit(1) is fine for now.
   });
 
-module.exports = app; // ✅ FIXED
+// ─── Server Start (MOVE THIS OUTSIDE MONGODB BLOCK) ───────────
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server is listening on port ${PORT}`);
+});
+
+module.exports = app;
