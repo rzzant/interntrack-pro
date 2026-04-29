@@ -14,11 +14,17 @@ export interface User {
   preferences?: { theme: "dark" | "light" };
 }
 
+export type ApplicationStatus =
+  | "Applied"
+  | "Interview"
+  | "Offer"
+  | "Rejected";
+
 export interface Application {
   _id: string;
   companyName: string;
   role: string;
-  status: "Applied" | "Interview" | "Offer" | "Rejected";
+  status: ApplicationStatus;
   dateApplied: string;
   notes: string;
   location?: string;
@@ -51,23 +57,22 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()(
-  persist<AuthState>(
+  persist(
     (set, get) => ({
       token: null,
       user: null,
       theme: "dark",
 
-      setAuth: (token, user) => set({ token, user }),
+      setAuth: (token: string, user: User) => set({ token, user }),
 
       logout: () => set({ token: null, user: null }),
 
-      updateUser: (user) => set({ user }),
+      updateUser: (user: User) => set({ user }),
 
       toggleTheme: () => {
         const newTheme = get().theme === "dark" ? "light" : "dark";
         set({ theme: newTheme });
 
-        // Safe for Next.js (client only)
         if (typeof window !== "undefined") {
           document.documentElement.classList.toggle(
             "dark",
@@ -78,11 +83,13 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "interntrack-auth",
+
+      // ✅ FIXED (no TS error)
       partialize: (state) => ({
         token: state.token,
         user: state.user,
         theme: state.theme,
-      }),
+      }) as Pick<AuthState, "token" | "user" | "theme">,
     }
   )
 );

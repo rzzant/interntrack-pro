@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   DndContext,
-  DragOverlay,
   closestCenter,
   useSensor,
   useSensors,
@@ -16,9 +15,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Plus, GripVertical } from "lucide-react";
+
 import { applicationsAPI } from "@/lib/api";
 import { useUIStore } from "@/lib/store";
-import type { Application } from "../../lib/store";
+import type { Application } from "@/lib/store"; // ✅ FIXED HERE
 import { STATUS_COLORS } from "@/lib/utils";
 
 type Status = "Applied" | "Interview" | "Offer" | "Rejected";
@@ -28,6 +28,7 @@ const COLUMNS: Status[] = ["Applied", "Interview", "Offer", "Rejected"];
 // ─── Card ─────────────────────────────────────────
 function Card({ app }: { app: Application }) {
   const { openModal } = useUIStore();
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: app._id });
 
@@ -74,7 +75,7 @@ export default function KanbanPage() {
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  // ✅ FIXED (NO ARGUMENTS)
+  // ✅ CORRECT API CALL (NO ARGUMENTS)
   const fetchApplications = useCallback(async () => {
     try {
       const data = await applicationsAPI.getAll();
