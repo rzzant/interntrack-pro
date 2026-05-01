@@ -1,5 +1,9 @@
 # InternTrack
 
+## Live Demo
+
+https://interntrack-pro-ten.vercel.app/
+
 ## Overview
 
 InternTrack is a full-stack web application designed to help students efficiently track and manage their internship applications with analytics and insights.
@@ -32,16 +36,14 @@ InternTrack provides a centralized dashboard to:
 
 ## Live Demo
 
-https://your-live-link-here
+
 
 ## Demo Credentials
 
 Email: [test@test.com](mailto:test@test.com)
 Password: 123456
 
-## Screenshots
 
-(Add 2–3 screenshots here)
 
 ## Future Improvements
 
